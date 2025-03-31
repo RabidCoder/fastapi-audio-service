@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16
+    container_name: audio_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: audio_service
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: audio_api
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+asyncpg://user:password@db/audio_service
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+volumes:
+  pg_data:
